@@ -8,9 +8,11 @@ using Microsoft.EntityFrameworkCore;
 using bookStoreProject.DBEFModels;
 using bookStoreProject.Models;
 using BookStoreProject.DBEFModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BookStoreProject.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase

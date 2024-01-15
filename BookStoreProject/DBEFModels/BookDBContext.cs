@@ -1,4 +1,5 @@
 ﻿using bookStoreProject.Models;
+using BookStoreProject.DBEFModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace bookStoreProject.DBEFModels
@@ -9,5 +10,7 @@ namespace bookStoreProject.DBEFModels
         
 
         public DbSet<Book> Books { get; set; }
+
+
     }
 }
