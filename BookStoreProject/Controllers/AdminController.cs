@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using bookStoreProject.DBEFModels;
 using bookStoreProject.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using BookStoreProject.DBEFModels;
 
 namespace BookStoreProject.Controllers
 {
@@ -17,10 +19,12 @@ namespace BookStoreProject.Controllers
     public class AdminController : ControllerBase
     {
         private readonly BookDBContext _context;
+        private readonly IdentityDbContext _identityContext;
 
-        public AdminController(BookDBContext context)
+        public AdminController(BookDBContext context, IdentityDbContext identityContext)
         {
             _context = context;
+            _identityContext = identityContext;
         }
 
         // GET: api/Admin
@@ -114,6 +118,27 @@ namespace BookStoreProject.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        // GET: api/Admin
+        [HttpGet("GetUsers")]
+        public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsers()
+        {
+            if (_context.Books == null)
+            {
+                return NotFound();
+            }
+
+            var users = _identityContext.ApiUsers
+                                     .Select(user => new UserDTO
+                                     {
+                                        id = user.Id,
+                                        Email = user.Email,
+                                        PhoneNumber = user.PhoneNumber
+
+                                     }).ToList();
+
+            return await Task.FromResult(users);
         }
 
         private bool BookExists(int id)
