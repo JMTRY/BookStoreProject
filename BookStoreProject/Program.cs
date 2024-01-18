@@ -17,7 +17,7 @@ ConfigurationManager configuration = builder.Configuration;
 // Add services to the container.
 
 
-
+// Adding a Database Context
 builder.Services.AddDbContext<BookDBContext>(options => options.UseSqlServer(
                 builder.Configuration.GetConnectionString("BookDbConnection")));
 
@@ -25,15 +25,16 @@ builder.Services.AddDbContext<BookDBContext>(options => options.UseSqlServer(
 
 
 // Identity
+// This line adds the IdentityDbContext to the dependency injection container.
 builder.Services.AddDbContext<BookStoreProject.DBEFModels.IdentityDbContext>(options => options.UseSqlServer(
                 builder.Configuration.GetConnectionString("IdentityDbConnection")));
 
+// AddDefaultIdentity configures the default Identity services
 builder.Services.AddDefaultIdentity<ApiUser>()//options => options.SignIn.RequireConfirmedAccount = true)
     .AddRoles<IdentityRole>()
+    //  This configures Entity Framework as the storage provider for the Identity system.
+    //  It specifies that the IdentityDbContext will be used to store Identity-related data.
     .AddEntityFrameworkStores<BookStoreProject.DBEFModels.IdentityDbContext>();
-//builder.Services.AddIdentityCore<ApiUser>(option => option.User.RequireUniqueEmail = true)
-//                .AddRoles<IdentityRole>()
-//                .AddEntityFrameworkStores<BookStoreProject.DBEFModels.IdentityDbContext>().AddDefaultTokenProviders();
 
 // Adding Authentication
 builder.Services.AddAuthentication(options =>
@@ -43,11 +44,13 @@ builder.Services.AddAuthentication(options =>
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 })
 
-// Adding Jwt Bearer
+// Adding Jwt Bearer authentication handler
+// Specify the configuration for validating JWT tokens.
 .AddJwtBearer(options =>
 {
     options.SaveToken = true;
     options.RequireHttpsMetadata = false;
+    // Specify the parameters for validating the received JWT token
     options.TokenValidationParameters = new TokenValidationParameters()
     {
         ValidateIssuer = true,
@@ -61,6 +64,7 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen(c =>
 {
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
